@@ -7,11 +7,7 @@ export interface Coordinates {
   timestamp: number
 }
 
-export type LocationError =
-  | 'permission-denied'
-  | 'position-unavailable'
-  | 'timeout'
-  | 'unsupported'
+export type LocationError = 'permission-denied' | 'position-unavailable' | 'timeout' | 'unsupported'
 
 export type GeolocationState =
   | { status: 'idle' }
@@ -21,25 +17,56 @@ export type GeolocationState =
 
 const initialState: GeolocationState = { status: 'idle' }
 
+const geolocationOptions: PositionOptions = {
+  timeout: 10_000,
+  maximumAge: 30_000,
+  enableHighAccuracy: false,
+}
+
 export function useGeolocation() {
   const state = ref<GeolocationState>(initialState)
 
   function handleSuccess(position: GeolocationPosition): void {
-    // TODO: Convert the browser-specific GeolocationPosition into Coordinates.
-    // TODO: Move the state to "success" with the normalized coordinates.
+    state.value = {
+      status: 'success',
+      coordinates: {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        timestamp: position.timestamp,
+      },
+    }
   }
 
-  function handleError(error: GeolocationPositionError): void {
-    // TODO: Map the native numeric error code to our LocationError union.
-    // TODO: Move the state to "error" with the mapped error.
+  function handleGeolocationError(error: GeolocationPositionError): void {
+    const errorMap: { [key: number]: LocationError } = {
+      1: 'permission-denied',
+      2: 'position-unavailable',
+      3: 'timeout',
+    }
+
+    const locationError: LocationError = errorMap[error.code] ?? 'position-unavailable'
+
+    state.value = { status: 'error', error: locationError }
+  }
+
+  function setError(error: LocationError) {
+    state.value = { status: 'error', error }
   }
 
   function locate(): void {
-    // TODO: Handle browsers that do not provide navigator.geolocation.
-    // TODO: Clear the previous result by moving the state to "locating".
-    // TODO: Request the current position and pass both callbacks.
-    // TODO: Decide which PositionOptions make sense for the first version.
-    console.log(navigator.geolocation);
+    if (!navigator.geolocation) {
+      setError('unsupported')
+      return
+    }
+
+    state.value = { status: 'locating' }
+
+    navigator.geolocation.getCurrentPosition(
+      handleSuccess,
+      handleGeolocationError,
+      geolocationOptions,
+    )
   }
 
   return {
