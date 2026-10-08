@@ -1,18 +1,12 @@
 import { readonly, ref } from 'vue'
-
-export interface Coordinates {
-  latitude: number
-  longitude: number
-  accuracy: number
-  timestamp: number
-}
+import type { GeolocationReading } from '@/types'
 
 export type LocationError = 'permission-denied' | 'position-unavailable' | 'timeout' | 'unsupported'
 
 export type GeolocationState =
   | { status: 'idle' }
   | { status: 'locating' }
-  | { status: 'success'; coordinates: Coordinates }
+  | { status: 'success'; geolocationReading: GeolocationReading }
   | { status: 'error'; error: LocationError }
 
 const initialState: GeolocationState = { status: 'idle' }
@@ -29,9 +23,11 @@ export function useGeolocation() {
   function handleSuccess(position: GeolocationPosition): void {
     state.value = {
       status: 'success',
-      coordinates: {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
+      geolocationReading: {
+        point: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        },
         accuracy: position.coords.accuracy,
         timestamp: position.timestamp,
       },
