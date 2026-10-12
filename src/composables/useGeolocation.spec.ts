@@ -33,10 +33,10 @@ describe('useGeolocation', () => {
         altitudeAccuracy: null,
         heading: null,
         speed: null,
-        toJSON: vi.fn(),
+        toJSON: vi.fn<GeolocationCoordinates['toJSON']>(),
       },
       timestamp: 1791536388115,
-      toJSON: vi.fn(),
+      toJSON: vi.fn<GeolocationPosition['toJSON']>(),
     } satisfies GeolocationPosition
 
     // The mock represents the browser boundary. It records the callbacks passed

@@ -6,8 +6,13 @@ const { geoPoint } = defineProps<{ geoPoint: GeoPoint }>()
 
 async function initializeMap(): Promise<void> {
   const { Map } = (await google.maps.importLibrary('maps')) as google.maps.MapsLibrary
+  const mapElement = document.getElementById('gmap')
 
-  new Map(document.getElementById('gmap'), {
+  if (!mapElement) {
+    throw new Error('Map container was not found')
+  }
+
+  new Map(mapElement, {
     center: {
       lat: 0,
       lng: 0,

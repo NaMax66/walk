@@ -6,6 +6,9 @@
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
 
+    // Google Maps is loaded at runtime through its browser SDK.
+    "types": ["google.maps"],
+
     // Path mapping for cleaner imports.
     "paths": {
       "@/*": ["./src/*"]
