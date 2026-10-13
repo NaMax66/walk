@@ -2,6 +2,8 @@
 
 > See a familiar neighborhood differently.
 
+[Live demo](https://walk.selfkit.org)
+
 Walk is a mobile-first app for more attentive walks. It uses the user's current location to suggest a short route through familiar surroundings and offers prompts that help them notice details they would normally pass by. After returning, the user can record observations and reflections from the walk.
 
 The project is both a useful portfolio piece and a practical exploration of production-oriented Vue and TypeScript development.
@@ -94,6 +96,14 @@ Each milestone should produce a small working vertical slice rather than infrast
 - Use Gemini for suggestions, never as a single point of failure.
 - Let the map help the user leave the screen rather than keep them on it.
 - Record important technical decisions together with the reasoning behind them.
+
+## Google Maps credentials
+
+The current public deployment uses a Google Maps Demo Key because Walk is still a prototype. The key is intentionally available to the browser and is therefore visible in the client bundle. It is not connected to a billing account, has a limited daily quota, and stops serving requests when that quota is exhausted, so it cannot generate charges.
+
+Environment variables keep the key out of the repository, but they do not make a client-side key secret. Before a production release, the demo key should be replaced with separate development and production keys. The production browser key must be restricted to the deployed website origins and to only the Google Maps APIs used by the application, with usage monitoring and quota limits enabled.
+
+Server-side credentials, including the future Gemini API key, must never be included in the client bundle. They will be stored as server-side secrets and accessed through a backend boundary such as a Cloudflare Worker.
 
 ## Getting started
 
